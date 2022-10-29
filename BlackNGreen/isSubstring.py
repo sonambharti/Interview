@@ -6,7 +6,7 @@ def isSubstring(str1, str2):
         for j in range(n):
             if(str1[i+j] != str2[j]):
                 break
-        if j+1 == m:
+        if j+1 == n:
             return i
     return -1
 
