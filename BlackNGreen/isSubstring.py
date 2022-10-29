@@ -16,10 +16,10 @@ str2 = "viewInter"
 res = isSubstring(str1, str2)
 
 if res == -1:
-    print("present")
+    print("not present")
     
 else:
-    print("not present")
+    print("present")
 
 """
 if str2 in str1:
