@@ -43,5 +43,5 @@ if __name__ == "__main__":
     head2.next.next = Node(75)
 
     res = connectedList(head1, head2)
-    print("If this list is connecte or not: ",res)
+    print("If this list is connected or not: ",res)
     
