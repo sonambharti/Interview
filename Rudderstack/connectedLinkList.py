@@ -1,4 +1,7 @@
 # code to find if a linklist is connected or not...
+"""
+Linklist is connected if both list have same end nodes
+"""
 
 class Node:
     def __init__(self, data):
@@ -40,5 +43,5 @@ if __name__ == "__main__":
     head2.next.next = Node(75)
 
     res = connectedList(head1, head2)
-    print(res)
+    print("If this list is connecte or not: ",res)
     
