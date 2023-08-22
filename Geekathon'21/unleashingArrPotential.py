@@ -38,19 +38,19 @@ def solver(arr, n):
     #     if res < 0:
     #         return 0
             
+    suff = [0]*n
+    for i in range(n-2,-1,-1):
+        suff[i] = max(suff[i+1], arr[i+1])
+            
+    prefMax = arr[0]
+    res = 0
     
-        for i in range(n-2,-1,-1):
-            suff[i] = max(suff[i+1], arr[i+1])
-            
-        prefMax = arr[0]
-        res = 0
+    for j in range(1, n-1):
+       res = max(res, (prefMax - arr[j]) * suff[j]) 
+       prefMax = max(prefMax, arr[j])
+    
         
-        for j in range(1, n-1):
-           res = max(res, (prefMax - arr[j]) * suff[j]) 
-           prefMax = max(prefMax, arr[j])
-        
-            
-        return res
+    return res
         
 
     
