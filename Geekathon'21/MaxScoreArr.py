@@ -11,6 +11,10 @@ N = 2
 arr = {1, 2}
 Output: 7
 """
+
+import sys
+sys.setrecursionlimit(100000)
+
 def helper(i, j, arr, arr_min, dp):
 
   # DP - memoization approach 
@@ -19,7 +23,6 @@ def helper(i, j, arr, arr_min, dp):
       
   if (dp[i][j] != -1):
       return dp[i][j]
-      
   
   left_score = arr[i] * (j - i + 1) + arr_min[i][j] + helper(i + 1, j, arr, arr_min, dp) 
   right_score = arr[j] * (j - i + 1) + arr_min[i][j] + helper(i, j - 1, arr, arr_min, dp)
@@ -28,18 +31,20 @@ def helper(i, j, arr, arr_min, dp):
   
   return dp[i][j]
 
-      
+
+
 def MaxScore(self, N, arr):
   # code here
   
-  arr_min = [[0]*N]*N
-  dp = [[-1]*N]*N
+  arr_min = [[None]*N for i in range(N)]
+  dp = [[-1]*N  for i in range(N)]
   
   for i in range(0, N):
-      minm = 1e9+7
-      for j in range(i, N):
-          minm = min(minm, arr[j])
-          arr_min[i][j] = minm
+    # minm = 1e9+7
+    minm = 2**63
+    for j in range(i, N):
+      minm = min(minm, arr[j])
+      arr_min[i][j] = minm
             
   return helper(0, N-1, arr, arr_min, dp)
 
