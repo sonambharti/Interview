@@ -1,3 +1,31 @@
+"""
+You're provided with two arrays:
+
+"geeksTown" of length n - representing the heights of buildings in Geek's town
+"journey" of length m      - representing the heights of buildings he sees during his train journey.
+Geek finds happiness when he encounters a series of buildings during his journey that completely match with geeksTown.
+
+You have 'q' queries of the form [l, r], where you need to determine how many times Geek will feel happy during the journey  from [l, r].
+
+Example:
+
+Input:
+n = 4,
+geeksTown[] = {3, 0, 1, 9},
+m = 11,
+journey[] = {1, 3, 0, 1, 9, 1, 7, 3, 0, 1, 9},
+q = 4,
+queries[] = [
+ [0, 3],
+ [1, 5],
+ [1, 10],
+ [7, 9]
+]
+Output:
+0 1 2 0
+
+"""
+
 def z_func(a, n):
     z = [0 for i in range (n)]
     l=0
