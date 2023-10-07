@@ -1,12 +1,11 @@
-#sort Array By Follow Doubled Value
+# String Palindrome
 
 """
-An integer array original is transformed into a doubled array sortArray 
-by appending twice the value of every element in original, and then 
-return an array which contains each element at even indexes should be 
-followed by double value at odd indexes.
-Given an array sortArray, return original if sortArray is a doubled array. 
-Otherwise return [].
+Description: Given a  String s, return integer for count 
+of all the unique palindromic, permutations of it. 
+If s has no palindromic permutation, return 0.
+
+s consists of only lowercase English letters.
 """
 
 def sortArrByFollowDoubledValue(sortArray):
@@ -31,19 +30,21 @@ def sortArrByFollowDoubledValue(sortArray):
     outputArray.append(el)
     sortArray.remove(el)
     
-    
     for i in range(n-2):
         el2 = 2*el
-        if(el2 in sortArray):
-            outputArray.append(el2)
-            sortArray.remove(el2)
-        else:
+        if(el2 not in sortArray):
             return []
+        else:
+            outputArray.append(el2)
+            print(outputArray)
+            sortArray.remove(el2)
             
         if(len(sortArray) != 0):
             el = sortArray[0]
             outputArray.append(el)
             sortArray.remove(el)
+        else:
+            break
     
     return outputArray
     
