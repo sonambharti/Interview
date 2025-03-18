@@ -27,11 +27,6 @@ def getMax_BruteForce(heights):
         res = max(res, curr)
     return res
 
-if __name__ == "__main__":
-    heights = [2,1,5,6,2,3]
-    res = getMax(heights)
-    print(res)
-
 def prevSmaller(heights):
     n = len(heights)
     prev = [-1]*n
