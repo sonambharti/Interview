@@ -8,7 +8,7 @@ class Calculate:
     
     def add(self, x):
         self.value += x 
-        return self
+        return self    # returning self here to allow chainig (as self is obj
         
     def sub(self, x):
         self.value -= x 
