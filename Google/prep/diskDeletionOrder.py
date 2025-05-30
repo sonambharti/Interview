@@ -34,49 +34,46 @@ You never violate snapshot dependency constraints (i.e., no disk should exist if
 🧱 Downsides:
     -   This could require repeatedly scanning the entire graph to find leaves ⇒ inefficient.
 """
-def brute_force_disk_deletion(disks, snapshots):
-    # Build a mapping from snapshot to list of disks created from it
-    snapshots_to_disks = {}
-    for disk in disks:
-        snap = disk.get('created_from_snapshot')
-        if snap:
-            if snap not in snapshots_to_disks:
-                snapshots_to_disks[snap] = []
-            snapshots_to_disks[snap].append(disk['name'])
-    
-    # Build a reverse dependency graph: disk -> list of disks that depend on it
-    dependencies = {disk['name']: set() for disk in disks}
-    for snapshot in snapshots:
-        snap_name = snapshot['name']
-        parent_disk = snapshot['disk']
-        #   Disk created from this snapshot depend on the parent Disk
-        for disk in snapshots_to_disks.get(snap_name,[]):
-            dependencies[disk].add(parent_disk)
-    
-    deletion_order = []
-    
-    while dependencies:
-        #   Find a disk with no dependencies (no one depends on it)
-        removable_disk = None
-        for disk, deps in dependencies.items():
-            if not deps:
-                removable_disk = disk 
-                break
-        if not removable_disk:
-            raise Exception("Cycle detected or invalid dependency - cannot resolve deletion order")
-            
-        #   Add it to the result
-        deletion_order.append(removable_disk)
-        
-        #   Remove it from other disk's dependency lists
-        for disk in dependencies:
-            dependencies[disk].discard(removable_disk)
-        
-        #   Finally, remove it from the map 
-        del dependencies[removable_disk]
-        
-    return deletion_order
 
+from collections import defaultdict, deque
+def brute_force_disk_deletion(disks, snapshots):
+    # Map snapshot name → parent disk
+    snapshot_to_disk = {snap['name']: snap['disk'] for snap in snapshots}
+
+    # Build reverse dependency: parent disk → set of children disks
+    reverse_graph = defaultdict(set)
+    all_disks = set()
+
+    for disk in disks:
+        disk_name = disk['name']
+        all_disks.add(disk_name)
+        snap_name = disk.get('created_from_snapshot')
+        if snap_name and snap_name in snapshot_to_disk:
+            parent_disk = snapshot_to_disk[snap_name]
+            reverse_graph[parent_disk].add(disk_name)
+
+    result = []
+    deleted = set()
+
+    while len(deleted) < len(all_disks):
+        deleted_this_round = False
+
+        for disk in all_disks:
+            if disk in deleted:
+                continue
+
+            # ✅ Only delete disk if all its children have been deleted
+            if all(child in deleted for child in reverse_graph[disk]):
+                result.append(disk)
+                deleted.add(disk)
+                deleted_this_round = True
+                break  # restart loop
+
+        if not deleted_this_round:
+            raise Exception("Cycle or unsatisfied dependency detected")
+
+    return result
+    
     
 
 
@@ -106,30 +103,29 @@ This is clearly a DAG of dependencies.
 """
 
 from collections import defaultdict, deque
-
+    
 def optimal_disk_deletion(disks, snapshots):
-    # Build a graph of disk dependencies (child -> parent)
-    graph = defaultdict(set)  # disk -> set of disks it depends on
-    in_degree = defaultdict(int)  # disk -> number of disks depending on it
+    graph = defaultdict(set)  # disk -> set of disks it depends on (must be deleted after them)
+    in_degree = defaultdict(int)  # disk -> number of disks it depends on
 
-    # Build snapshot → disk map (disks created from snapshots)
     snapshot_to_disks = defaultdict(list)
     for disk in disks:
         snap = disk.get('created_from_snapshot')
         if snap:
             snapshot_to_disks[snap].append(disk['name'])
 
-    # Build dependency graph from snapshots
     for snap in snapshots:
         snap_name = snap['name']
         parent_disk = snap['disk']
-        for child_disk in snapshot_to_disks[snap_name]:
-            graph[parent_disk].add(child_disk)  # parent_disk must be deleted after child_disk
-            in_degree[child_disk] += 1
+        for child_disk in snapshot_to_disks.get(snap_name, []):
+            # ✅ CORRECT: To delete parent, all children must be deleted first
+            graph[child_disk].add(parent_disk)
+            in_degree[parent_disk] += 1
 
-    # Add all disks with 0 in-degree (no dependencies) to the queue
     all_disks = set(d['name'] for d in disks)
     queue = deque()
+
+    # Disks with no dependencies can be safely deleted first
     for disk in all_disks:
         if in_degree[disk] == 0:
             queue.append(disk)
@@ -140,7 +136,6 @@ def optimal_disk_deletion(disks, snapshots):
         disk = queue.popleft()
         deletion_order.append(disk)
 
-        # For all disks that this disk was a dependency of:
         for dependent in graph[disk]:
             in_degree[dependent] -= 1
             if in_degree[dependent] == 0:
@@ -150,6 +145,7 @@ def optimal_disk_deletion(disks, snapshots):
         raise Exception("Cycle or unresolved dependency found")
 
     return deletion_order
+    
 
 
 if __name__ == "__main__":
@@ -161,7 +157,8 @@ if __name__ == "__main__":
     
     snapshots = [
             {'name': 'snapA', 'disk': 'diskA'},
-            {'name': 'snapB', 'disk': 'diskB'}
+            {'name': 'snapB', 'disk': 'diskB'},
+            {'name': 'snapC', 'disk': 'diskC'},
         ]
     
     print("Brute Force Deletion Order: ", brute_force_disk_deletion(disks, snapshots))
