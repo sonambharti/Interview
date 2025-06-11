@@ -1,4 +1,4 @@
-"""
+""" 
 # Q2
 Given a list of n delivery zones, where the 4th zone covers the interval(a[I], b[I])(inclusive). Additionally, given is a maximum allowed 
 length k, for any new delivery zone that can be added.
@@ -61,37 +61,39 @@ Output: 1
 def minmConnectedZones(a, b, k):
     n = len(a)
     if n == 0:
-        return 1
+        return 1 # If no intervals exist, return 1 (you need at least one zone, even if artificial)
 
-    segs = [(a[i], b[i]) for i in range(n)]
-    segs.sort()
+    segs = [(a[i], b[i]) for i in range(n)] # Create a list of tuples representing intervals.
+    segs.sort() # sort the intervals by starting point to allow linear merging.
 
     merged = []
-    merged.append(segs[0])
+    merged.append(segs[0]) # merge the zones
     for i in range(1, n):
         L, R = segs[i]
         lastL, lastR = merged[-1]
+        # If the next segment overlaps with or touches the last one, merge it.
         if L <= lastR:
             if R > lastR:
                 merged[-1] = (lastL, R)
         else:
             merged.append((L, R))
-
-    m = len(merged)
+    
+    m = len(merged) # m: number of disconnected merged zones
     if m <= 1:
-        return 1
+        return 1   # If only one zone remains, return 1.
 
     best = 0
     j = 0
     for i in range(m):
         if j < i:
             j = i
+        # For each merged zone i, try to connect as many next zones as possible with one delivery zone of length ≤ k.
         while j + 1 < m and merged[j + 1][0] - merged[i][1] <= k:
-            j += 1
-        merges = j - i
-        if merges > best:
+            j += 1  
+        merges = j - i  # how many zones we can connect from current i.
+        if merges > best:  # Track the maximum number of merges we can do with one added segment of length ≤ k
             best = merges
-
+    # If best merges were possible, we reduce the total number of zones by best.
     return m - best
     
 
