@@ -44,6 +44,10 @@ Constraints:
 1 <= k <= bloomDay.length
 '''
 
+"""
+If bloomDay is sorted then we can directly check (n*k) th index that ll return the no. of days....
+"""
+
 def is_possible(bloomDay, day, n, k):
     bouquets = 0
     flowers = 0
