@@ -6,7 +6,7 @@ This only works for the word weather.
 import httpx
 import re
 # Replace with your actual OpenWeatherMap API key
-OPENWEATHER_API_KEY = "3f6b6e4d25a4a75d4fff9bce57a869c0"
+OPENWEATHER_API_KEY = "YOUR_API_KEY"
 WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"
 def extract_location(text: str) -> str | None:
     """
