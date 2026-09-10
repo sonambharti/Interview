@@ -1,0 +1,4 @@
+Q. How would you design search bar and it's functionality in UI?
+Q. How will you implement DB indexing?
+Q. Design an API to search in DB?
+Q. Suppose if your API is working properly in UAT, and fails in production. How will you debug and solve the issue?
